@@ -1,59 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
+use App\Services\UserServices;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JWTAuthController extends Controller
 {
-
-
-    public function register(Request $request)
+    public function __construct(
+        private readonly UserServices $userServices
+    )
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = User::create([
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password'))
-        ]);
-
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json(compact('user', 'token'), 201);
     }
 
-    public function login(Request $request)
+    public function registerAdmin(RegisterUserRequest $request): JsonResponse
     {
-        $credentials = $request->only('email', 'password');
+        $data = $this->userServices->registerDataUser($request, 'admin');
 
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'invalid_credentials'], 401);
+        return response()->json($data, 201);
+    }
+
+    public function registerCustomer(RegisterUserRequest $request): JsonResponse
+    {
+        $data = $this->userServices->registerDataUser($request, 'client');
+
+        return response()->json($data, 201);
+    }
+
+
+    public function login(Request $request): JsonResponse
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
         }
-        $user = Auth::user();
-        $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
+
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Senha incorreta'], 401);
+        }
+
+        $token = JWTAuth::fromUser($user);
 
         return response()->json(compact('token'));
     }
 
-    public function getUser()
+    public function getUser(): JsonResponse
     {
         try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['error' => 'User not found'], 404);
             }
         } catch (JWTException $e) {
@@ -63,7 +66,7 @@ class JWTAuthController extends Controller
         return response()->json(compact('user'));
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         JWTAuth::invalidate(JWTAuth::getToken());
 
