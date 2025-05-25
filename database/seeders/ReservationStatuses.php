@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +15,7 @@ class ReservationStatuses extends Seeder
         $reservationStatuses = [
             ['slug' => 'active', 'label' => 'Ativo', 'created_at' => now(), 'updated_at' => now()],
             ['slug' => 'cancelled', 'label' => 'Cancelado', 'created_at' => now(), 'updated_at' => now()],
+            ['slug' => 'pending', 'label' => 'Pendente', 'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('reservation_statuses')->insert($reservationStatuses);

@@ -15,7 +15,6 @@ class TableController extends Controller
     public function index(): JsonResponse
     {
         $tables = Table::with('status')
-            ->whereHas('status', fn($query) => $query->where('slug', 'available'))
             ->get();
         return response()->json(TableResource::collection($tables));
     }

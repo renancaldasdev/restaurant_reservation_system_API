@@ -10,7 +10,7 @@ class TableResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = [
-            'name' => $this->name,
+            'table_number' => $this->table_number,
             'capacity' => $this->capacity,
         ];
 

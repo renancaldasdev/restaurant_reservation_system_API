@@ -26,11 +26,11 @@ class TableStoreRequest extends FormRequest
         $tableId = $this->route('id');
 
         return [
-            'name' => [
+            'table_number' => [
                 'required',
-                'string',
+                'integer',
                 'max:255',
-                Rule::unique('tables', 'name')->ignore($tableId),
+                Rule::unique('tables', 'table_number')->ignore($tableId),
             ], 'capacity' => 'required|integer',
         ];
     }
@@ -38,8 +38,8 @@ class TableStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'Já existe uma mesa com esse nome ou número',
-            'name.required' => 'Nome ou número da mesa obrigatório',
+            'table_number.unique' => 'Já existe uma mesa com esse nome ou número',
+            'table_number.required' => 'Nome ou número da mesa obrigatório',
             'capacity.required' => 'Capacidade da mesa obrigatória'
         ];
     }

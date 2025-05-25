@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->integer('table_number');
             $table->integer('capacity');
             $table->foreignId('status_id')
                 ->default(1)

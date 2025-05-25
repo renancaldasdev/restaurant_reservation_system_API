@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JWTAuthController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Http\Request;
@@ -32,5 +33,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/', [TableController::class, 'store']);
         Route::patch('/{id}', [TableController::class, 'update']);
         Route::delete('/{id}', [TableController::class, 'destroy']);
+    });
+
+    Route::prefix('reservations')->group(function () {
+        Route::get('/', [ReservationController::class, 'index']);
+        Route::post('/', [ReservationController::class, 'store']);
+        Route::patch('/{id}/cancel', [ReservationController::class, 'cancelReservation']);
     });
 });

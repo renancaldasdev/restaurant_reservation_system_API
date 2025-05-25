@@ -1,34 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class TableStatus extends Model
+class ReservationStatus extends Model
 {
-    protected $table = 'table_statuses';
+    use HasFactory;
+
     protected $fillable = [
         'slug',
         'label',
     ];
-    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-    const SLUG_RESERVED = 'reserved';
     const SLUG_AVAILABLE = 'available';
     const SLUG_PENDING = 'pending';
     const SLUG_CANCELLED = 'cancelled';
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-    public function tables(): HasMany
+    public function reservations(): HasMany
     {
-        return $this->hasMany(Table::class, 'status_id');
+        return $this->hasMany(Reservation::class, 'reservation_status_id');
     }
 
     public static function findBySlugOrFail(string $slug): self
     {
         return self::where('slug', $slug)->firstOrFail();
     }
-
 }
